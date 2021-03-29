@@ -22,6 +22,8 @@ range(10)  产生一个0到10的 range object.
 
 终止index是 左闭右开的. 
 
+TypeError: 'int' object is not subscriptable此报错一般是在整数上加了下标：
+
 #### list
 
 list中加入tuple

@@ -59,8 +59,9 @@ def get_available_actions(current_state):
     for i in range(len(current_state)):
         for j in range(len(current_state[i])):
             print(current_state[i][j])  # for debug
-            if current_state[i] != 0:
-                res += (i, j)
+            if current_state[i][j] == 0:
+                xy = (i, j)
+                res.append(xy)
     return res
 
 
@@ -90,11 +91,14 @@ def min_value(current_state, depth):
     :param depth:
     :return:a utility value
     """
+    g = GameJudge()
+    g.game_state = current_state
     if g.check_game_status() != 2:  # terminate
-        return utility(current_state)
+        return utility(current_state, 1)
     v = 1000000
+    s: tuple
     for s in get_available_actions(current_state):
-        m = max_value(action_result(current_state, s, 1), depth + 1)
+        m = max_value(action_result(current_state, s, 1), depth + 1)  # 把每个可以用的action都试一遍
         if m < v:  # because always computer use this function ,so player = 1
             v = m
     return v
@@ -110,7 +114,7 @@ def max_value(current_state, depth):
     g = GameJudge()
     g.game_state = current_state
     if g.check_game_status() != 2:  # terminate
-        return utility(current_state)
+        return utility(current_state, 1)
     v = -1000000
     for s in get_available_actions(current_state):
         m = min_value(action_result(current_state, s, 1), depth + 1)
@@ -120,7 +124,7 @@ def max_value(current_state, depth):
 
 
 # flag 有啥用?
-
+# 电脑玩家是MAX user，你是MIN user，也就是说电脑的落子要使utility最大，而你落子要使 utility最小；
 def utility(current_state, flag):
     """
     return utility function given current state and flag
@@ -128,7 +132,14 @@ def utility(current_state, flag):
     :param flag:
     :return:
     """
-    pass
+    g = GameJudge()
+    g.game_state = current_state
+    if g.check_game_status() == 1:
+        return 1
+    if g.check_game_status() == -1:
+        return -1
+    else:  # g.check_game_status() == 0:
+        return 0
 
 
 # Do not modify the following code using for judge win or lose
