@@ -18,7 +18,7 @@
 # +++++++++++++++++++++++++++++++++++++++++++++ README ++++++++++++++++++++++++++++++++++++++++
 
 import numpy as np
-
+import copy
 
 def MinimaxSearch(current_state):
     """
@@ -58,7 +58,7 @@ def get_available_actions(current_state):
     res = []
     for i in range(len(current_state)):
         for j in range(len(current_state[i])):
-            print(current_state[i][j])  # for debug
+      #      print(current_state[i][j])  # for debug
             if current_state[i][j] == 0:
                 xy = (i, j)
                 res.append(xy)
@@ -98,7 +98,10 @@ def min_value(current_state, depth):
     v = 1000000
     s: tuple
     for s in get_available_actions(current_state):
-        m = max_value(action_result(current_state, s, 1), depth + 1)  # 把每个可以用的action都试一遍
+        print("before"+str(current_state[0][1]))
+        tmpstate = action_result(copy.deepcopy(current_state) , s, 1)
+        m = max_value(tmpstate, depth - 1)  # 把每个可以用的action都试一遍
+        print("after"+str(current_state[0][1]))
         if m < v:  # because always computer use this function ,so player = 1
             v = m
     return v
@@ -117,7 +120,8 @@ def max_value(current_state, depth):
         return utility(current_state, 1)
     v = -1000000
     for s in get_available_actions(current_state):
-        m = min_value(action_result(current_state, s, 1), depth + 1)
+        tmpstate = action_result(copy.deepcopy(current_state), s, -1)
+        m = min_value(tmpstate, depth - 1)
         if m > v:  # because always computer use this function ,so player = 1
             v = m
     return v
