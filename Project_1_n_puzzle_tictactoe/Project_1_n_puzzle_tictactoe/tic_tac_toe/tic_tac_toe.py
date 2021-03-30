@@ -20,6 +20,7 @@
 import numpy as np
 import copy
 
+
 def MinimaxSearch(current_state):
     """
     Search the next step by Minimax Search with depth limited strategy
@@ -58,7 +59,7 @@ def get_available_actions(current_state):
     res = []
     for i in range(len(current_state)):
         for j in range(len(current_state[i])):
-      #      print(current_state[i][j])  # for debug
+            #      print(current_state[i][j])  # for debug
             if current_state[i][j] == 0:
                 xy = (i, j)
                 res.append(xy)
@@ -98,10 +99,10 @@ def min_value(current_state, depth):
     v = 1000000
     s: tuple
     for s in get_available_actions(current_state):
-        print("before"+str(current_state[0][1]))
-        tmpstate = action_result(copy.deepcopy(current_state) , s, 1)
+        print("before" + str(current_state[0][1]))
+        tmpstate = action_result(copy.deepcopy(current_state), s, -1)
         m = max_value(tmpstate, depth - 1)  # 把每个可以用的action都试一遍
-        print("after"+str(current_state[0][1]))
+        print("after" + str(current_state[0][1]))
         if m < v:  # because always computer use this function ,so player = 1
             v = m
     return v
@@ -120,7 +121,7 @@ def max_value(current_state, depth):
         return utility(current_state, 1)
     v = -1000000
     for s in get_available_actions(current_state):
-        tmpstate = action_result(copy.deepcopy(current_state), s, -1)
+        tmpstate = action_result(copy.deepcopy(current_state), s, 1)
         m = min_value(tmpstate, depth - 1)
         if m > v:  # because always computer use this function ,so player = 1
             v = m
@@ -142,8 +143,61 @@ def utility(current_state, flag):
         return 1
     if g.check_game_status() == -1:
         return -1
-    else:  # g.check_game_status() == 0:
+    if g.check_game_status() == 0:
         return 0
+    else:  # g.check_game_status() == 0: 这里应该是 判断未完成的时候的.
+        uti = 0
+        sum_rows = np.sum(g.game_state, axis=1).tolist()  # axis=1按行的方向相加，返回每个行的值；axis=0按列相加，返回每个列的值。
+        sum_cols = np.sum(g.game_state, axis=0).tolist()
+        diag = []
+        diag += g.game_state[0][0] + g.game_state[1][1] + g.game_state[2][2]
+        rdiag = []
+        rdiag += g.game_state[0][2] + g.game_state[1][1] + g.game_state[2][0]
+        for i in range(3):
+            if sum_rows[i] == 1:
+                if -1 not in g.game_state[i, :]:
+                    uti += 1  # 如果有-1 那就是0 , 如果没有就是 一个1
+            if sum_rows[i] == 2:
+                uti += 3
+            if sum_rows[i] == -1:
+                if 1 not in g.game_state[i, :]:
+                    uti -= 1
+            if sum_rows[i] == -2:
+                uti -= 3
+        for i in range(3):
+            if sum_cols[i] == 1:
+                if -1 not in g.game_state[:, i]:
+                    uti += 1
+            if sum_cols[i] == 2:
+                uti += 3
+            if sum_cols[i] == -1:
+                if 1 not in g.game_state[:, i]:
+                    uti -= 1
+            if sum_cols[i] == -2:
+                uti -= 3
+        for i in range(3):
+            if sum(diag) == 1:
+                if -1 not in diag:
+                    uti += 1
+            if sum(diag) == 2:
+                uti += 3
+            if sum(diag) == -1:
+                if 1 not in diag:
+                    uti -= 1
+            if sum(diag) == -2:
+                uti -= 3
+        for i in range(3):
+            if sum(rdiag) == 1:
+                if -1 not in rdiag:
+                    uti += 1
+            if sum(rdiag) == 2:
+                uti += 3
+            if sum(rdiag) == -1:
+                if 1 not in rdiag:
+                    uti -= 1
+            if sum(rdiag) == -2:
+                uti -= 3
+        return uti
 
 
 # Do not modify the following code using for judge win or lose
