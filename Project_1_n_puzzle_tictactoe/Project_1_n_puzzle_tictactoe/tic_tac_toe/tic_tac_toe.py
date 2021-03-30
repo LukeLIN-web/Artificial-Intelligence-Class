@@ -41,7 +41,8 @@ def MinimaxSearch(current_state):
     values = []
     depth = 3
     for action in actions:
-        values.append(min_value(action_result(game_state.copy(), action, 1), depth))
+        acmin = min_value(action_result(game_state.copy(), action, 1), depth)
+        values.append(acmin)
     max_ind = int(np.argmax(values))  # 找出最大值
     row, col = actions[max_ind][0], actions[max_ind][1]  # 返回电脑下的地方
 
@@ -153,6 +154,7 @@ def utility(current_state, flag):
         diag += g.game_state[0][0] + g.game_state[1][1] + g.game_state[2][2]
         rdiag = []
         rdiag += g.game_state[0][2] + g.game_state[1][1] + g.game_state[2][0]
+        # 行
         for i in range(3):
             if sum_rows[i] == 1:
                 if -1 not in g.game_state[i, :]:
@@ -164,6 +166,7 @@ def utility(current_state, flag):
                     uti -= 1
             if sum_rows[i] == -2:
                 uti -= 3
+        # 列
         for i in range(3):
             if sum_cols[i] == 1:
                 if -1 not in g.game_state[:, i]:
@@ -175,6 +178,7 @@ def utility(current_state, flag):
                     uti -= 1
             if sum_cols[i] == -2:
                 uti -= 3
+        # 对角线
         for i in range(3):
             if sum(diag) == 1:
                 if -1 not in diag:
@@ -186,6 +190,7 @@ def utility(current_state, flag):
                     uti -= 1
             if sum(diag) == -2:
                 uti -= 3
+        # 另一条对角线
         for i in range(3):
             if sum(rdiag) == 1:
                 if -1 not in rdiag:

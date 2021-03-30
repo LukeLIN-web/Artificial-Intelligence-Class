@@ -91,7 +91,7 @@ class PuzzleState(object):
 
     def generate_state(self, random=False, seed=None):
         """
-        Generate a new state
+        Generate a new state 你可以通过调用 generate_state()成员函数来随机生成棋盘格的状态,**需要设定random参数**
         :param random: True - generate state randomly, False - generate a normal state
         :param seed: Choose the seed of random, only used when random = True
         :return:
@@ -202,7 +202,7 @@ def run_moves(curr_state, dst_state, moves):
     Ideally, after we perform moves to current state, we will get a state same as the 'dst_state'
     :param curr_state: EightPuzzleState, current state
     :param dst_state: EightPuzzleState, destination state
-    :param moves: List of Move
+    :param moves: List of Move用于判断生成的移动指令是否可以从初始状态到达目标状态
     :return:
         flag of moves: True - We can get 'dst_state' from 'curr_state' by 'moves'
     """
@@ -245,7 +245,7 @@ def print_moves(init_state, moves):
     While performing the list of move to current state, this function will also print how each move is performed
     :param init_state: The initial state
     :param moves: List of move
-    :return:
+    :return: 会打印中间移动指令的执行过程
     """
     print("Initial state")
     init_state.display()
@@ -333,7 +333,7 @@ NOTICE:
     6 7 8                6 7 8
    This definition is actually consistent with where your finger moves to
    when you are playing 8 puzzle game.
-   
+   需要自己实现,函数输入参数为init_state（起始状态）与dst_state（目标状态），返回值为move_list（移动指令列表）。
 3. It's just a simple example of A-Star search. You can implement this function in your own design.  
 """
 def astar_search_for_puzzle_problem(init_state, dst_state):

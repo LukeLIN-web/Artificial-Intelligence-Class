@@ -16,7 +16,7 @@ def main():
            8,  9, 12, 3  ]
     init_state.state = np.asarray(dst).reshape(square_size, square_size)
 
-    move_list = generate_moves(100)
+    move_list = generate_moves(100) #起始状态是通过在目标状态上随机执行一定步数的移动指令生成，当前设置为100步
     init_state.state = runs(init_state, move_list).state
 
     # Set a determined destination state

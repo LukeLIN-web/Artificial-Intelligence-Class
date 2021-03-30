@@ -1,4 +1,4 @@
-# n-Puzzle Promblem 项目说明
+# n-Puzzle Problem 项目说明
 
 ## 简介
 本项目要求实现一个A-star搜索算法来求解15-Puzzle问题。
@@ -9,7 +9,7 @@
 
 ## 文件结构
 **puzzle_state.py** 
-* 定义了表示问题状态的类PuzzleState，初始化参数square_size表示其对应的棋盘边长，当square_size = 3时，表示3 x 3的棋盘格，即8-puzzle问题，在本项目中我们将square_size设为4
+* 定义了表示问题状态的类PuzzleState，初始化参数square_size表示其对应的棋盘边长，当square_size = 3时，表示3 x 3的棋盘格，即8-puzzle问题，在本项目中我们将square_size设为4https://blog.csdn.net/wuqindeyunque/article/details/104402356
   * **这部分代码不需要修改**
   * 你可以通过调用 generate_state()成员函数来随机生成棋盘格的状态,**需要设定random参数**
   
@@ -43,7 +43,7 @@
 * 该实现中，对open_list的处理方式是较为简单的处理方式，你可以通过自定义list的插入函数来实现priority_deque，以提升算法的效率
 
 **我们鼓励你自行设计该函数，但是请明确使用 update_cost() 这一子函数，以便于我们了解你的启发式函数具体设计**
-  
+
 ### 其他建议
 * 本项目中，移动方向对应棋盘格中的空格移动方向，请注意区分
 * 注意检查返回的移动指令顺序，以及对应的变量类型

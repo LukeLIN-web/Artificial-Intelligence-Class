@@ -29,7 +29,10 @@ TypeError: 'int' object is not subscriptable此报错一般是在整数上加了
 list中加入tuple
 
 ```python
-res += (i, j)
+res += (i, j)是不对的, 就是加了两个int
+res.append((i, j)) correct
+xy = (i, j)
+res.append(xy) correct
 ```
 
 
