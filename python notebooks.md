@@ -16,7 +16,7 @@ tuple ,int , str是immutable的,值传递  list,dict是 mutable的, 引用传递
 
 list 的方法有: insert, remove, slice, index, interate,  
 
-range(10)  产生一个0到10的 range object.
+range(10)  产生一个0到9的 range object.
 
 `list(range(10));`
 

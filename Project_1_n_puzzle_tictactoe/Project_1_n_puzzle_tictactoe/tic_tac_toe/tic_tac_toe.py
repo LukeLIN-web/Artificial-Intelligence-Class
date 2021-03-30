@@ -94,15 +94,15 @@ def min_value(current_state, depth):
     """
     g = GameJudge()
     g.game_state = current_state
-    if g.check_game_status() != 2:  # terminate
+    if g.check_game_status() != 2 or depth == 0:  # terminate
         return utility(current_state, 1)
     v = 1000000
     s: tuple
     for s in get_available_actions(current_state):
-        print("before" + str(current_state[0][1]))
+        # print("before" + str(current_state[0][1]))
         tmpstate = action_result(copy.deepcopy(current_state), s, -1)
         m = max_value(tmpstate, depth - 1)  # 把每个可以用的action都试一遍
-        print("after" + str(current_state[0][1]))
+        # print("after" + str(current_state[0][1]))
         if m < v:  # because always computer use this function ,so player = 1
             v = m
     return v
@@ -117,7 +117,7 @@ def max_value(current_state, depth):
     """
     g = GameJudge()
     g.game_state = current_state
-    if g.check_game_status() != 2:  # terminate
+    if g.check_game_status() != 2 or depth == 0:  # terminate
         return utility(current_state, 1)
     v = -1000000
     for s in get_available_actions(current_state):
