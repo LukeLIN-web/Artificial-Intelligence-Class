@@ -1,6 +1,7 @@
 import numpy as np
 from enum import Enum
 import copy
+import heapq
 
 
 # Enum of operation in EightPuzzle problem
@@ -18,7 +19,7 @@ class Move(Enum):
 # EightPuzzle state
 class PuzzleState(object):
     """
-    Class for state in EightPuzzle-Problem
+    Class for state in EightPuzzle-Problem , show problem state
     Attr:
         square_size: Chessboard size, e.g: In 8-puzzle problem, square_size = 3
         state: 'square_size' x 'square_size square', '-1' indicates the 'blank' block  (For 8-puzzle, state is a 3 x 3 array)
@@ -27,7 +28,8 @@ class PuzzleState(object):
         pre_move:  The previous operation to get to current state
         pre_state: Parent state of this state
     """
-    def __init__(self, square_size = 3):
+
+    def __init__(self, square_size=3):
         self.square_size = square_size
         self.state = None
         self.g = 0
@@ -39,6 +41,10 @@ class PuzzleState(object):
 
     def __eq__(self, other):
         return (self.state == other.state).all()
+
+    # I override lt for heap queue
+    def __lt__(self, other):
+        return self.g + self.h < other.g + other.h  # 小
 
     def blank_pos(self):
         """
@@ -56,7 +62,7 @@ class PuzzleState(object):
         return row, col
 
     def num_pos(self, num):
-	    """
+        """
         Find the 'num' position of current state
         :return:
             row: 'num' row index, '-1' indicates the current state may be invalid
@@ -109,7 +115,7 @@ class PuzzleState(object):
         :return:
         """
         print("----------------------")
-        for i in range(self.state.shape[0]):
+        for i in range(self.state.shape[0]):  # tuple of array dimensions"
             # print("{}\t{}\t{}\t".format(self.state[i][0], self.state[i][1], self.state[i][2]))
             # print(self.state[i, :])
             for j in range(self.state.shape[1]):
@@ -278,7 +284,7 @@ def print_moves(init_state, moves):
     next_state.display()
 
 
-def generate_moves(move_num = 30):
+def generate_moves(move_num=30):
     """
     Generate a list of move in a determined length randomly
     :param move_num:
@@ -314,6 +320,48 @@ def convert_moves(moves):
         return moves
 
 
+def update_cost(child_state, dst_state):
+    child_state: PuzzleState
+    dst_state: PuzzleState
+    child_state.g = 1
+    x1, y1 = child_state.blank_pos()
+    x2, y2 = dst_state.blank_pos()
+    child_state.h = abs(x1 - x2) + abs(y1 - y2)  # find the distance between child's blank and dst's blank
+    return child_state
+
+
+def expand_state(curr_state):
+    childs = []
+    # find the block location , if  x> 0 ,
+    row, col = curr_state.blank_pos()
+    # block can move up
+    if row > 0:
+        childs.append(curr_state[:row - 1] + [
+            curr_state[row - 1][:col] + curr_state[row][col:col + 1] + curr_state[row - 1][col + 1:]] + [
+                          curr_state[row][:col] + curr_state[row - 1][col:col + 1] + curr_state[row][
+                                                                                     col + 1:]] + curr_state[row + 1:])
+    # block can move down
+    if row < curr_state.square_size:
+        childs.append(curr_state[:row] + [
+            curr_state[row][:col] + curr_state[row + 1][col:col + 1] + curr_state[row][col + 1:]] + [
+                          curr_state[row + 1][:col] + curr_state[row][col:col + 1] + curr_state[row + 1][
+                                                                                     col + 1:]] + curr_state[row + 2:])
+    # block can move left
+    if col > 0:
+        childs.append(curr_state[:row]+[curr_state[row][:col-1]+curr_state[row][col:col+1]+curr_state[row][col-1:col]+curr_state[row][col+1:]]+curr_state[row+1:])
+
+    # block can move right
+    if col < curr_state.square_size:
+        childs.append(curr_state[:row]+[curr_state[row][:col]+curr_state[row][col+1:col+2]+curr_state[row][col:col+1]+curr_state[row][col+2:]]+curr_state[row+1:])
+    return childs
+
+
+def get_path(curr_stat):
+    res: list
+    return res
+    pass
+
+
 """
 NOTICE:
 1. init_state is a 3x3 numpy array, the "space" is indicated as -1, for example
@@ -325,7 +373,7 @@ NOTICE:
     1 stands for down
     2 stands for left
     3 stands for right
-    We 
+    
    There might be several ways to understand "moving up/down/left/right". Here we define
    that "moving up" means to move 'space' up, not move other numbers up. For example
     1 2 5                1 2 -1
@@ -334,8 +382,11 @@ NOTICE:
    This definition is actually consistent with where your finger moves to
    when you are playing 8 puzzle game.
    需要自己实现,函数输入参数为init_state（起始状态）与dst_state（目标状态），返回值为move_list（移动指令列表）。
+   what's more, there is no other function use astar 
 3. It's just a simple example of A-Star search. You can implement this function in your own design.  
 """
+
+
 def astar_search_for_puzzle_problem(init_state, dst_state):
     """
     Use AStar-search to find the path from init_state to dst_state
@@ -348,25 +399,27 @@ def astar_search_for_puzzle_problem(init_state, dst_state):
     start_state = init_state.clone()
     end_state = dst_state.clone()
 
-    open_list = []   # You can also use priority queue instead of list
+    open_list = []  # You can also use priority queue instead of list
     close_list = []
 
     move_list = []  # The operations from init_state to dst_state
 
     # Initial A-star
-    open_list.append(start_state)
+    heapq.heappush(open_list, start_state)
 
     while len(open_list) > 0:
         # Get best node from open_list
-        curr_idx, curr_state = find_front_node(open_list)
+        # you can define list insertion function to implement priority deque to improve the efficiency of algorithm
+        curr_state = open_list[0]  # curr_idx, curr_state = find_front_node(open_list)
 
         # Delete best node from open_list
-        open_list.pop(curr_idx)
+        heapq.heappop(open_list)  # open_list.pop(curr_idx) 这样要找到再pop，O（n）比较慢
 
         # Add best node in close_list
         close_list.append(curr_state)
 
         # Check whether found solution
+        moves: list
         if curr_state == dst_state:
             moves = get_path(curr_state)
             return moves
@@ -381,7 +434,7 @@ def astar_search_for_puzzle_problem(init_state, dst_state):
             if in_list:
                 continue
 
-            # Assign cost to child state. You can also do this in Expand operation
+            # Assign cost(including g and h) to child state. You can also do this in Expand operation
             child_state = update_cost(child_state, dst_state)
 
             # Find a better state in open_list
@@ -389,5 +442,4 @@ def astar_search_for_puzzle_problem(init_state, dst_state):
             if in_list:
                 continue
 
-            open_list.append(child_state)  
-
+            open_list.append(child_state)
