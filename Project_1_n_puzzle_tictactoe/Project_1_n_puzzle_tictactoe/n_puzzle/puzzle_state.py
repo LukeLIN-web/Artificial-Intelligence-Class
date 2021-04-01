@@ -324,10 +324,26 @@ def update_cost(child_state, dst_state):
     child_state: PuzzleState
     dst_state: PuzzleState
     child_state.g = 1
-    x1, y1 = child_state.blank_pos()
-    x2, y2 = dst_state.blank_pos()
-    child_state.h = abs(x1 - x2) + abs(y1 - y2)  # find the distance between child's blank and dst's blank
+    manhattan = 0
+    for i in child_state.square_size:
+        for j in child_state.square_size:
+            if child_state.state[i][j] != dst_state.state[i][j]:
+                int ii = (child_state.state[i][j] - 1) / child_state.square_size
+                int jj = child_state.state[i][j] - ii* child_state.square_size - 1
+                manhattan += abs(ii - i) + abs(jj - j)
+
+
+    child_state.h = manhattan # find the distance between child's blank and dst's blank
     return child_state
+
+
+def state_in_list(child_state, close_list):
+
+
+
+    return in_list, match_state
+
+
 
 
 def expand_state(curr_state):
@@ -336,28 +352,49 @@ def expand_state(curr_state):
     row, col = curr_state.blank_pos()
     # block can move up
     if row > 0:
-        childs.append(curr_state[:row - 1] + [
+        s1 = PuzzleState()
+        s1.pre_state = curr_state
+        s1.pre_move = Up
+        s1.state = curr_state[:row - 1] + [
             curr_state[row - 1][:col] + curr_state[row][col:col + 1] + curr_state[row - 1][col + 1:]] + [
                           curr_state[row][:col] + curr_state[row - 1][col:col + 1] + curr_state[row][
-                                                                                     col + 1:]] + curr_state[row + 1:])
-    # block can move down
+                                                                                     col + 1:]] + curr_state[row + 1:]
+        childs.append(s1)
+
+
+    # block can move down    Up = 0
+    #     Down = 1
+    #     Left = 2
+    #     Right = 3
     if row < curr_state.square_size:
+        s2 = PuzzleState()
+        s2.pre_state = curr_state
+        s2.pre_move = Down
         childs.append(curr_state[:row] + [
             curr_state[row][:col] + curr_state[row + 1][col:col + 1] + curr_state[row][col + 1:]] + [
                           curr_state[row + 1][:col] + curr_state[row][col:col + 1] + curr_state[row + 1][
                                                                                      col + 1:]] + curr_state[row + 2:])
     # block can move left
     if col > 0:
-        childs.append(curr_state[:row]+[curr_state[row][:col-1]+curr_state[row][col:col+1]+curr_state[row][col-1:col]+curr_state[row][col+1:]]+curr_state[row+1:])
+        s3 = PuzzleState()
+        s3.pre_state = curr_state
+        s3.pre_move = Left
+        s3.state = curr_state[:row]+[curr_state[row][:col-1]+curr_state[row][col:col+1]+curr_state[row][col-1:col]+curr_state[row][col+1:]]+curr_state[row+1:]
+        childs.append(s3)
 
     # block can move right
     if col < curr_state.square_size:
-        childs.append(curr_state[:row]+[curr_state[row][:col]+curr_state[row][col+1:col+2]+curr_state[row][col:col+1]+curr_state[row][col+2:]]+curr_state[row+1:])
+        s4 = PuzzleState()
+        s4.pre_state = curr_state
+        s4.pre_move = Right
+        s4.state = curr_state[:row]+[curr_state[row][:col]+curr_state[row][col+1:col+2]+curr_state[row][col:col+1]+curr_state[row][col+2:]]+curr_state[row+1:]
+        childs.append(s4)
     return childs
 
 
 def get_path(curr_stat):
     res: list
+
     return res
     pass
 
@@ -410,7 +447,7 @@ def astar_search_for_puzzle_problem(init_state, dst_state):
     while len(open_list) > 0:
         # Get best node from open_list
         # you can define list insertion function to implement priority deque to improve the efficiency of algorithm
-        curr_state = open_list[0]  # curr_idx, curr_state = find_front_node(open_list)
+        curr_state = open_list[0]  # before line is :curr_idx, curr_state = find_front_node(open_list)
 
         # Delete best node from open_list
         heapq.heappop(open_list)  # open_list.pop(curr_idx) 这样要找到再pop，O（n）比较慢
@@ -418,7 +455,7 @@ def astar_search_for_puzzle_problem(init_state, dst_state):
         # Add best node in close_list
         close_list.append(curr_state)
 
-        # Check whether found solution
+        # Check whether found solution， return the path
         moves: list
         if curr_state == dst_state:
             moves = get_path(curr_state)
@@ -427,9 +464,9 @@ def astar_search_for_puzzle_problem(init_state, dst_state):
         # Expand node
         childs = expand_state(curr_state)
 
+        # calculate the fn of each node state
         for child_state in childs:
-
-            # Explored node
+            # Explored node, if this state in the close_list, do not consider it.
             in_list, match_state = state_in_list(child_state, close_list)
             if in_list:
                 continue
