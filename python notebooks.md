@@ -12,6 +12,8 @@ basic type : int/float/ complex , str . bool
 
 container :  list/tuple,  dict/ set 
 
+dict是用来存储键值对结构的数据的，set其实也是存储的键值对，只是默认键和值是相同的。Python中的dict和set都是通过散列表来实现的
+
 tuple ,int , str是immutable的,值传递  list,dict是 mutable的, 引用传递.
 
 list 的方法有: insert, remove, slice, index, interate,  
@@ -35,7 +37,9 @@ xy = (i, j)
 res.append(xy) correct
 ```
 
+list中find:  if a in list :就可以了.
 
+遍历list
 
 ##### 错误
 
@@ -103,9 +107,13 @@ c=Circle(5)
 ```
 
 1.np.where(condition,x,y) 当where内有三个参数时，第一个参数表示条件，当条件成立时where方法返回x，当条件不成立时where返回y
-2.np.where(condition) 当where内只有一个参数时，那个参数表示条件，当条件成立时，where返回的是每个符合condition条件元素的坐标,返回的是以元组的形式
+2.np.where(condition) 当where内只有一个参数时，那个参数表示条件，当条件成立时，where返回的是每个符合condition条件元素的坐标,返回的是以元组的形式.
 
+eq怎么用?
 
+```python
+print``(cat_1.__eq__(cat_2)) 
+```
 
 ### 切片
 
@@ -123,10 +131,12 @@ https://www.liaoxuefeng.com/wiki/1016959663602400/1017269965565856
 [0, 2, 4, 6, 8]
 所有数，每5个取一个：
 >>> L[::5]
-
 childs.append(curr_state[:idx - 1] + curr_state[idx:idx + 1] + curr_state[idx - 1:idx] + curr_state[idx + 1:]) 
 两行交换, 越界了也不会报错.
-
+交换二维list中两个元素,和np中array不一样.
+      curr_state.state[:row] + [
+            curr_state.state[row][:col] + curr_state.state[row + 1][col:col + 1] + curr_state.state[row][col + 1:]] + [curr_state.state[row + 1][:col] + curr_state.state[row][col:col + 1] + curr_state.state[row + 1][ col + 1:]] + curr_state.state[row + 2:]
+  
 ```
 
 
@@ -168,6 +178,28 @@ Python中没有swap()函数,交换两个数的方式
 ```python
 a,b = b,a
 ```
+
+
+
+pycharm 一键注释: ctrl +/
+
+
+
+pycharm无法最大化, pycharm最小化打不开。
+
+解决方法: 重装pycharm也不行, 换个项目就可以了.
+
+
+
+#### numpy库
+
+```python
+np.zeros(shape=(4, 4)) 
+```
+
+
+
+ ValueError: operands could not be broadcast together with shapes (0,) (3,)
 
 
 

@@ -1,3 +1,5 @@
+from typing import List, Any
+
 import numpy as np
 from enum import Enum
 import copy
@@ -28,8 +30,9 @@ class PuzzleState(object):
         pre_move:  The previous operation to get to current state
         pre_state: Parent state of this state
     """
+    square_size: int
 
-    def __init__(self, square_size=3):
+    def __init__(self, square_size=4):
         self.square_size = square_size
         self.state = None
         self.g = 0
@@ -39,6 +42,7 @@ class PuzzleState(object):
 
         self.generate_state()
 
+    # 重写了__eq__()方法的类会隐式的把__hash__赋为None
     def __eq__(self, other):
         return (self.state == other.state).all()
 
@@ -190,6 +194,7 @@ def once_move(curr_state, move):
         return True, next_state
     else:
         return False, next_state
+    # fail op will return curr_state copy
 
 
 def check_state(src_state, dst_state):
@@ -323,80 +328,65 @@ def convert_moves(moves):
 def update_cost(child_state, dst_state):
     child_state: PuzzleState
     dst_state: PuzzleState
-    child_state.g = 1
+    child_state.g = child_state.pre_state.g + 1
     manhattan = 0
-    for i in child_state.square_size:
-        for j in child_state.square_size:
-            if child_state.state[i][j] != dst_state.state[i][j]:
-                int ii = (child_state.state[i][j] - 1) / child_state.square_size
-                int jj = child_state.state[i][j] - ii* child_state.square_size - 1
-                manhattan += abs(ii - i) + abs(jj - j)
-
-
-    child_state.h = manhattan # find the distance between child's blank and dst's blank
+    for i in range(child_state.square_size ** 2):
+        dst_row, dst_col = dst_state.num_pos(i)
+        chi_row, chi_col = child_state.num_pos(i)
+        manhattan += abs(dst_row - chi_row) + abs(dst_col - chi_col)
+    child_state.h = manhattan  # find the distance between child's blank and dst's blank
     return child_state
 
 
-def state_in_list(child_state, close_list):
-
-
-
-    return in_list, match_state
-
-
+# 返回是否在list中
+def state_in_list(child_state, argList):
+    argList: List
+    for it in argList:
+        if child_state.__eq__(it):
+            return True, it
+    return False, None
 
 
 def expand_state(curr_state):
-    childs = []
+    childs: List[Any] = []
     # find the block location , if  x> 0 ,
     row, col = curr_state.blank_pos()
-    # block can move up
+    # block can move up  前row -1行,
     if row > 0:
-        s1 = PuzzleState()
-        s1.pre_state = curr_state
-        s1.pre_move = Up
-        s1.state = curr_state[:row - 1] + [
-            curr_state[row - 1][:col] + curr_state[row][col:col + 1] + curr_state[row - 1][col + 1:]] + [
-                          curr_state[row][:col] + curr_state[row - 1][col:col + 1] + curr_state[row][
-                                                                                     col + 1:]] + curr_state[row + 1:]
-        childs.append(s1)
-
+        flag, s1 = once_move(curr_state, Move.Up)
+        if flag is True:
+            childs.append(s1)
 
     # block can move down    Up = 0
     #     Down = 1
     #     Left = 2
     #     Right = 3
     if row < curr_state.square_size:
-        s2 = PuzzleState()
-        s2.pre_state = curr_state
-        s2.pre_move = Down
-        childs.append(curr_state[:row] + [
-            curr_state[row][:col] + curr_state[row + 1][col:col + 1] + curr_state[row][col + 1:]] + [
-                          curr_state[row + 1][:col] + curr_state[row][col:col + 1] + curr_state[row + 1][
-                                                                                     col + 1:]] + curr_state[row + 2:])
+        flag, s2 = once_move(curr_state, Move.Down)
+        if flag is True:
+            childs.append(s2)
+
     # block can move left
     if col > 0:
-        s3 = PuzzleState()
-        s3.pre_state = curr_state
-        s3.pre_move = Left
-        s3.state = curr_state[:row]+[curr_state[row][:col-1]+curr_state[row][col:col+1]+curr_state[row][col-1:col]+curr_state[row][col+1:]]+curr_state[row+1:]
-        childs.append(s3)
+        flag, s3 = once_move(curr_state, Move.Left)
+        if flag is True:
+            childs.append(s3)
 
     # block can move right
     if col < curr_state.square_size:
-        s4 = PuzzleState()
-        s4.pre_state = curr_state
-        s4.pre_move = Right
-        s4.state = curr_state[:row]+[curr_state[row][:col]+curr_state[row][col+1:col+2]+curr_state[row][col:col+1]+curr_state[row][col+2:]]+curr_state[row+1:]
-        childs.append(s4)
+        flag, s4 = once_move(curr_state, Move.Right)
+        if flag is True:
+            childs.append(s4)
     return childs
 
 
 def get_path(curr_stat):
-    res: list
-
+    res = []
+    while curr_stat.pre_state is not None:
+        res.append(curr_stat.pre_move)
+        curr_stat = curr_stat.pre_state
+    res.reverse()
     return res
-    pass
 
 
 """
@@ -427,6 +417,7 @@ NOTICE:
 def astar_search_for_puzzle_problem(init_state, dst_state):
     """
     Use AStar-search to find the path from init_state to dst_state
+    init_state and dst state are  PuzzleState classes
     :param init_state:  Initial puzzle state
     :param dst_state:   Destination puzzle state
     :return:  All operations needed to be performed from init_state to dst_state
@@ -436,8 +427,8 @@ def astar_search_for_puzzle_problem(init_state, dst_state):
     start_state = init_state.clone()
     end_state = dst_state.clone()
 
-    open_list = []  # You can also use priority queue instead of list
-    close_list = []
+    open_list = []  # I use priority queue instead of list, List[PuzzleState]
+    close_list = []  # close list is a list[PuzzleState]
 
     move_list = []  # The operations from init_state to dst_state
 
@@ -468,13 +459,14 @@ def astar_search_for_puzzle_problem(init_state, dst_state):
         for child_state in childs:
             # Explored node, if this state in the close_list, do not consider it.
             in_list, match_state = state_in_list(child_state, close_list)
+            # if this state in close list, we don't judge it .
             if in_list:
                 continue
 
             # Assign cost(including g and h) to child state. You can also do this in Expand operation
             child_state = update_cost(child_state, dst_state)
 
-            # Find a better state in open_list
+            # Find a better state in open_list 如果找到一样的就没必要加入了.
             in_list, match_state = state_in_list(child_state, open_list)
             if in_list:
                 continue
