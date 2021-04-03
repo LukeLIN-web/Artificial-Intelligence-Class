@@ -24,7 +24,8 @@ class PuzzleState(object):
     Class for state in EightPuzzle-Problem , show problem state
     Attr:
         square_size: Chessboard size, e.g: In 8-puzzle problem, square_size = 3
-        state: 'square_size' x 'square_size square', '-1' indicates the 'blank' block  (For 8-puzzle, state is a 3 x 3 array)
+        state: 'square_size' x 'square_size square', '-1' indicates the 'blank' block
+        (For 8-puzzle, state is a 3 x 3 array)
         g: The cost from initial state to current state
         h: The value of heuristic function
         pre_move:  The previous operation to get to current state
@@ -150,7 +151,7 @@ def check_move(curr_state, move):
 
     src_row, src_col = curr_state.blank_pos()
     dst_row, dst_col = src_row, src_col
-    valid_op = False
+    # valid_op = False
 
     if move == Move.Up:  # Number moves up, blank moves down
         dst_row -= 1
@@ -330,7 +331,7 @@ def update_cost(child_state, dst_state):
     dst_state: PuzzleState
     child_state.g = child_state.pre_state.g + 1
     manhattan = 0
-    for i in range(1,child_state.square_size ** 2):
+    for i in range(1, child_state.square_size ** 2):
         dst_row, dst_col = dst_state.num_pos(i)
         chi_row, chi_col = child_state.num_pos(i)
         manhattan += abs(dst_row - chi_row) + abs(dst_col - chi_col)
@@ -361,7 +362,7 @@ def expand_state(curr_state):
     #     Down = 1
     #     Left = 2
     #     Right = 3
-    if row < curr_state.square_size -1:
+    if row < curr_state.square_size - 1:
         flag, s2 = once_move(curr_state, Move.Down)
         if flag is True:
             childs.append(s2)
@@ -373,7 +374,7 @@ def expand_state(curr_state):
             childs.append(s3)
 
     # block can move right
-    if col < curr_state.square_size -1: # col < curr_state.square_size是不行的, 这样 3到最右边了, 但是还是会进入if语句
+    if col < curr_state.square_size - 1:  # col < curr_state.square_size是不行的, 这样 3到最右边了, 但是还是会进入if语句
         flag, s4 = once_move(curr_state, Move.Right)
         if flag is True:
             childs.append(s4)
@@ -425,7 +426,7 @@ def astar_search_for_puzzle_problem(init_state, dst_state):
     """
 
     start_state = init_state.clone()
-    end_state = dst_state.clone()
+    # end_state = dst_state.clone()
 
     open_list = []  # I use priority queue instead of list, List[PuzzleState]
     close_list = []  # close list is a list[PuzzleState]
@@ -471,4 +472,10 @@ def astar_search_for_puzzle_problem(init_state, dst_state):
             if in_list:
                 continue
 
-            open_list.append(child_state)
+            if open_list.__len__() > 0:
+                fno = open_list[0].g + open_list[0].h
+                fnc = child_state.g + child_state.h
+                if fnc < fno:
+                    open_list.append(child_state)
+            else:
+                open_list.append(child_state)
