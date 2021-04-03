@@ -182,6 +182,7 @@ def once_move(curr_state, move):
         valid_op: boolean, flag of this move is valid or not. True - valid move, False - invalid move
         next_state: EightPuzzleState, state after this move
     """
+    curr_state: PuzzleState
     valid_op, src_row, src_col, dst_row, dst_col = check_move(curr_state, move)
 
     next_state = curr_state.clone()
@@ -472,10 +473,11 @@ def astar_search_for_puzzle_problem(init_state, dst_state):
             if in_list:
                 continue
 
-            if open_list.__len__() > 0:
-                fno = open_list[0].g + open_list[0].h
-                fnc = child_state.g + child_state.h
-                if fnc < fno:
-                    open_list.append(child_state)
-            else:
-                open_list.append(child_state)
+            # if open_list.__len__() > 0:
+            #     fno = open_list[0].g + open_list[0].h
+            #     fnc = child_state.g + child_state.h
+            #     if fnc < fno:
+            #         heapq.heappush(open_list, child_state)
+            # else:
+            heapq.heappush(open_list, child_state)
+            # open_list.append(child_state)
