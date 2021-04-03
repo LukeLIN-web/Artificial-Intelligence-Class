@@ -330,7 +330,7 @@ def update_cost(child_state, dst_state):
     dst_state: PuzzleState
     child_state.g = child_state.pre_state.g + 1
     manhattan = 0
-    for i in range(child_state.square_size ** 2):
+    for i in range(1,child_state.square_size ** 2):
         dst_row, dst_col = dst_state.num_pos(i)
         chi_row, chi_col = child_state.num_pos(i)
         manhattan += abs(dst_row - chi_row) + abs(dst_col - chi_col)
@@ -361,7 +361,7 @@ def expand_state(curr_state):
     #     Down = 1
     #     Left = 2
     #     Right = 3
-    if row < curr_state.square_size:
+    if row < curr_state.square_size -1:
         flag, s2 = once_move(curr_state, Move.Down)
         if flag is True:
             childs.append(s2)
@@ -373,7 +373,7 @@ def expand_state(curr_state):
             childs.append(s3)
 
     # block can move right
-    if col < curr_state.square_size:
+    if col < curr_state.square_size -1: # col < curr_state.square_size是不行的, 这样 3到最右边了, 但是还是会进入if语句
         flag, s4 = once_move(curr_state, Move.Right)
         if flag is True:
             childs.append(s4)
@@ -430,7 +430,7 @@ def astar_search_for_puzzle_problem(init_state, dst_state):
     open_list = []  # I use priority queue instead of list, List[PuzzleState]
     close_list = []  # close list is a list[PuzzleState]
 
-    move_list = []  # The operations from init_state to dst_state
+    # move_list = []  # The operations from init_state to dst_state
 
     # Initial A-star
     heapq.heappush(open_list, start_state)
