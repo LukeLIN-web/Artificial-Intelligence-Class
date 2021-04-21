@@ -20,9 +20,9 @@ list 的方法有: insert, remove, slice, index, interate,
 
 range(10)  产生一个0到9的 range object.
 
-`list(range(10));`
+`list(range(10))`
 
-终止index是 左闭右开的. 
+终止index是 左闭右开的. 比如`list(range(1,11))`  从1到10 
 
 TypeError: 'int' object is not subscriptable此报错一般是在整数上加了下标：
 
