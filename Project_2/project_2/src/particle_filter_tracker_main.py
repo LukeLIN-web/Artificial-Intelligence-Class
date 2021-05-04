@@ -54,7 +54,7 @@ def main():
     dataset_dir = home_dir/'..'/'data'/test_split/'imgs'
     save_dir = home_dir/'..'/'data'/test_split/'results'
 
-    # Determine the initial bounding box location
+    # Determine the initial bounding box locationtest_split: 评估数据集名称，可选的为’car’和’David2’，前者的难度较低
     if test_split == 'car':
         init_rect = Rect(68, 47, 97, 115)
     elif test_split == 'David2':
@@ -63,11 +63,12 @@ def main():
     #############################################
     # Some variables you can change
     #############################################
-    ref_wh = [15, 15]            # Reference size of particle
-    sigmas = [4, 4, 0.03, 0.03]  # Transition sigma of each attr of a particle
-    n_particles = 400            # Number of particles used in particle filter
-    feature_type = 'intensity'   # Default feature type, you can try some better features(e.g: HOG)
-    step = 1  # Gap of 
+    ref_wh = [15, 15]            # Reference size of particle在预先实现的特征提取函数中，使用像素强度时，
+    #为了保证特征 向量尺寸一致，我们统一将rect中的图像区域resize到与ref_wh一致的尺寸
+    sigmas = [4, 4, 0.03, 0.03]  # Transition sigma of each attr of a particle粒子cx,cy,sx,sy的状态转移标准差
+    n_particles = 400            # Number of particles used in particle filter使用的粒子总数，值越高算法速度越慢，但是跟踪性能会越好
+    feature_type = 'intensity'   # Default feature type, you can try some better features(e.g: HOG)使用的特征类型
+    step = 1  # Gap of 读取图像序列的间隔，step=1时，会连续读取图像帧，step=2时，会隔一帧读取图 像。该值越高，跟踪的难度越大
     
     # Read image sequences
     img_list = dataset_dir.files()
@@ -80,7 +81,8 @@ def main():
     init_img = cv2.imread(img_list[0], -1)
     init_particle = init_rect.to_particle(ref_wh, sigmas=sigmas)
     particles = [init_particle.clone() for i in range(n_particles) ]  # Initialize particles
-    
+    #你也可以使用一组4 x N（或N x 4）的 numpy.array来直接表示一组粒子，以便于批量的操作计算
+
     # Initial matching template
     init_features = extract_feature(init_img, init_rect, ref_wh, feature_type)
     template = init_features  # Use feature of latest frame as the matching template
@@ -92,19 +94,23 @@ def main():
         curr_img = cv2.imread(img_list[idx], -1)
 
         # Transition particles by Gaussian Distribution
+        # 对粒子进行状态转移，预测当前帧的粒子分布
         particles = transition_step(particles, sigmas)
 
         # Compute each particle's weight by its similarity of template
+        #函数根据每个粒子与匹配模板的相似度来确定其权重
         weights = weighting_step(curr_img, particles, ref_wh, template, feature_type)
         
         # Decision of best bounding box location by weights
+        # 根据每个粒子的权重和分布来确定当前目标的位置，以及生成下一帧的匹配模板。
+        # 这里我们预设了一个最简单的策略：使用权重最大的粒子作为当前帧的跟踪结果，其对应的特征向量就是下一帧的匹配模板
         max_idx = np.argmax(weights)
         curr_particle = particles[max_idx]
         template = extract_feature(curr_img, curr_particle.to_rect(ref_wh), ref_wh, feature_type)
         
         show_img_with_rect(curr_img, curr_particle.to_rect(ref_wh), idx, particles, save_dir=save_dir)
 
-        # Resample the particles by their weights
+        # Resample the particles by their weights 根据粒子的权重，进行重新采样分配
         particles = resample_step(particles, weights, rsp_sigmas=[2, 2, 0.015, 0.015])
     cv2.destroyAllWindows()
 
