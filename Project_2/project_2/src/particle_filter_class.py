@@ -9,6 +9,7 @@ import cv2
 import numpy as np
 import copy
 
+#表示图像中一个目标的矩形框
 class Rect(object):
     """
     Class of Rectagle bounding box (lx, ly, w, h)
@@ -51,7 +52,8 @@ class Rect(object):
         self.h = min(img_h - self.ly - 1, self.h)
         return self
 
-
+#不强制要求使用，你也可以仅用一个numpy.array来表示一个粒子
+#如果使用该class，你可能需要实现其中的transition成员函数
 class Particle(object):
     """
     Class of particle (cx, cy, sx, sy), corresponding to a rectangle bounding box
@@ -62,7 +64,7 @@ class Particle(object):
 
         The following attrs are optional
         weight: weight of this particle
-        sigmas: transition sigmas of this particle
+        sigmas: transition sigmas of this particle转移概率分布标准差（表示cx,cy,sx,sy对应的概率分布标准差）
     """
     def __init__(self, cx=0, cy=0, sx=0, sy=0, sigmas=None):
         self.cx = cx
@@ -125,13 +127,15 @@ class Particle(object):
 def extract_feature(dst_img, rect, ref_wh, feature_type='intensity'):
     """
     Extract feature from the dst_img's ROI of rect.
-    :param dst_img:
+    :param dst_img:在图像dst_img上对应于rect区域的部分提取特征，用于计算不同rect之间的相似度
     :param rect: ROI range of dst_img
     :param ref_wh: reference size of particle
     :param feature_type:
     :return: A vector of features value
     """
-
+    #
+    #本函数预先实现了一个基于像素强度的特征提取，会根据rect对应图像区域计算一个1 x ref_wh[0] x ref_wh[1]的特征向量
+    #可以根据需要尝试其他更优秀的特征
     if feature_type == 'intensity':
         rect.clip_range(dst_img.shape[1], dst_img.shape[0])
         roi = dst_img[rect.lx:rect.lx + rect.w,
@@ -151,6 +155,9 @@ def transition_step(particles, sigmas):
     :param sigmas: std of transition model
     :return: Transitioned particles
     """
+    #根据高斯概率分布模型来重新采样当前粒子下一个时刻的位置,
+    # sigmas表示粒子的cx,cy,sx,sy对应的高斯概率分布的标准差
+    #使用了Particle类的话，可以通过调用Particle的transition函数来实现
     print('trans')
     for particle in particles:
         particle.transition(sigmas)
@@ -167,7 +174,12 @@ def weighting_step(dst_img, particles, ref_wh, template, feature_type):
     :param feature_type:
     :return: weights of particles
     """
+    #计算每个粒子与当前跟踪的特征匹配模板template的相似度，
+    # 从而计算每个粒子对应的权重
+    # 这里你需要实现一个compute_similarity(particles, template)函数，
+    # 表明相似度的计算 过程.返回值weights是每个粒子对应的权重，且 sum(weights) = 1
     pass
+
 
 
 def resample_step(particles, weights, rsp_sigmas=None):
@@ -186,6 +198,8 @@ def compute_similarities(features, template):
     :param features: features of particles
     :template: template for matching
     """
+    #rsp_particles = resample_step(particles, weights) —— 重采样函数 根据每个粒子的权重，对其重新采样，
+    # 保留或增加高权重的粒子，减少或剔除低权重粒子.注意要保持粒子总数不变
     pass
      
 def compute_similarity(feature, template):
