@@ -88,7 +88,7 @@ class Particle(object):
             sigmas = dst_sigmas
         #可以通过调用Particle的transition函数来实现,
         # 根据高斯概率分布模型来重新采样当前粒子下一个时刻的位置. 
-        # 我们这里用多元正态分布采样
+        # 我们这里用多元正态分布采样   
         mean =  np.array([cx,cy]) # 均值
         conv = np.array([[sigmas[0],0.0],[0.0,sigmas[1]] ]) # 协方差矩阵
         x, y = np.random.multivariate_normal(mean=mean, cov=conv, size=1).T #size代表需要采样生成的点数
@@ -190,6 +190,7 @@ def weighting_step(dst_img, particles, ref_wh, template, feature_type):
     # 从而计算每个粒子对应的权重
     # 这里你需要实现一个compute_similarity(particles, template)函数，
     # 表明相似度的计算 过程.返回值weights是每个粒子对应的权重，且 sum(weights) = 1
+
     pass
 
 
@@ -201,7 +202,19 @@ def resample_step(particles, weights, rsp_sigmas=None):
     :param weights: Particles' weights
     :param rsp_sigmas: For transition of resampled particles
     """
-    pass
+    # 这里要自己判断怎么根据权重来resample
+    # 根据每个粒子的权重，对其重新采样，保留或增加高权重的粒子，减少或剔除低权重粒子,
+    # 注意要保持粒子总数不变
+    res = []
+    for i in range(particles.len()):
+        threshold = random.random() # 随机生成的一个实数，它在[0,1)范围内。
+        sum = 0
+        for j in particles:
+            sum += j.weight #权值很大 当权重求和加到q(i)这个粒子的时候 将很多次大于0-1随机数
+            if sum >= threshold:
+                res.append(j.clone()) # 一定会大于 阈值的, 因为权值和为1.
+                break
+    return res    
 
     
 def compute_similarities(features, template):
@@ -217,8 +230,7 @@ def compute_similarities(features, template):
 def compute_similarity(feature, template):
     """
     Compute similarity of a single feature with template
-    :param feature: feature of a single particle
+    :param feature: feature of a single particle 单个粒子.
     :template: template for matching
     """
     pass
-

@@ -35,11 +35,13 @@ res += (i, j)是不对的, 就是加了两个int
 res.append((i, j)) correct
 xy = (i, j)
 res.append(xy) correct
+遍历list
+for i in list
 ```
 
 list中find查找:  if a in list :就可以了.
 
-遍历list
+
 
 list 中元素个数 : open_list.__len__()
 
