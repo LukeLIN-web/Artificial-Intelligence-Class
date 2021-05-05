@@ -14,7 +14,7 @@ class Rect(object):
     """
     Class of Rectagle bounding box (lx, ly, w, h)
         lx: col index of the left-up conner
-        ly: row index of the left-up conner
+        ly: row index of the left-up conner拐角点
         w: width of rect (pixel)
         h: height of rect (pixel)
     """
@@ -40,16 +40,16 @@ class Rect(object):
     
     def clip_range(self, img_w, img_h):
         """
-        Clip rect range into img size (Make sure the rect only containing pixels in image)
+        clip into把…删节成Clip rect range into img size (Make sure the rect only containing pixels in image)
         :param img_w: width of image (pixel)
         :param img_h: height of image (pixel)
         :return:
         """
         self.lx = max(self.lx, 1)
-        self.ly = max(self.ly, 1)
+        self.ly = max(self.ly, 1)# 保证在范围当中
         
         self.w = min(img_w - self.lx - 1, self.w)
-        self.h = min(img_h - self.ly - 1, self.h)
+        self.h = min(img_h - self.ly - 1, self.h) 
         return self
 
 #不强制要求使用，你也可以仅用一个numpy.array来表示一个粒子
@@ -60,7 +60,7 @@ class Particle(object):
         cx: col index of the center of rectangle (pixel)
         cy: row index of the center of rectangle (pixel)
         sx: width compared with a reference size
-        xy: height compared with a reference size
+        sy: height compared with a reference size
 
         The following attrs are optional
         weight: weight of this particle
@@ -86,8 +86,19 @@ class Particle(object):
             sigmas = self.sigmas
         else:
             sigmas = dst_sigmas
-        
-        pass
+        #可以通过调用Particle的transition函数来实现,
+        # 根据高斯概率分布模型来重新采样当前粒子下一个时刻的位置. 
+        # 我们这里用多元正态分布采样
+        mean =  np.array([cx,cy]) # 均值
+        conv = np.array([[sigmas[0],0.0],[0.0,sigmas[1]] ]) # 协方差矩阵
+        x, y = np.random.multivariate_normal(mean=mean, cov=conv, size=1).T #size代表需要采样生成的点数
+        self.cx = x
+        self.cy = y
+        mean1 =  np.array([cx,cy])
+        conv1 = np.array([[sigmas[2],0.0],[0.0,sigmas[3]] ])
+        sxNew, syNew = np.random.multivariate_normal(mean=mean1, cov=conv1, size=1).T
+        self.sx = sxNew
+        self.sy = syNew
         return self
     
     def update_weight(self, w):
@@ -134,15 +145,16 @@ def extract_feature(dst_img, rect, ref_wh, feature_type='intensity'):
     :return: A vector of features value
     """
     #
-    #本函数预先实现了一个基于像素强度的特征提取，会根据rect对应图像区域计算一个1 x ref_wh[0] x ref_wh[1]的特征向量
-    #可以根据需要尝试其他更优秀的特征
+    #本函数预先实现了一个基于像素强度(其实就是灰度)的特征提取，会根据rect对应图像区域计算一个1 x ref_wh[0] x ref_wh[1]的特征向量
+    #可以根据需要尝试其他更优秀的特征 直接用else if 写在下面就可以了 
     if feature_type == 'intensity':
-        rect.clip_range(dst_img.shape[1], dst_img.shape[0])
+        rect.clip_range(dst_img.shape[1], dst_img.shape[0]) # 先裁剪一下.保证在范围内
         roi = dst_img[rect.lx:rect.lx + rect.w,
-                      rect.ly:rect.ly + rect.h]
-    
+                      rect.ly:rect.ly + rect.h]# 截取一幅图
+
         scaled_roi = cv2.resize(roi, (ref_wh[0], ref_wh[1]))   # Fixed-size ROI
-        return scaled_roi.astype(np.float).reshape(1, -1)/255.0
+        #感兴趣区域(ROI) 是从图像中选择的一个图像区域 然后改变一下大小 
+        return scaled_roi.astype(np.float).reshape(1, -1)/255.0  #转换为float,reshape(1,-1)转化成1行灰度值：
     else:
         print('Undefined feature type \'{}\' !!!!!!!!!!')
         return None

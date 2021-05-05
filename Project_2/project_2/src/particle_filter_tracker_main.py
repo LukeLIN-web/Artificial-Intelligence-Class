@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Apr 24 15:26:54 2019
-
 @author: lee
 """
 
@@ -56,19 +55,20 @@ def main():
 
     # Determine the initial bounding box locationtest_split: 评估数据集名称，可选的为’car’和’David2’，前者的难度较低
     if test_split == 'car':
-        init_rect = Rect(68, 47, 97, 115)
+        init_rect = Rect(68, 47, 97, 115) # 一开始找一个矩形作为模板
     elif test_split == 'David2':
         init_rect = Rect(140, 62, 70, 36)
 
     #############################################
     # Some variables you can change
     #############################################
-    ref_wh = [15, 15]            # Reference size of particle在预先实现的特征提取函数中，使用像素强度时，
+    ref_wh = [15, 15]            # Reference size of particle
+    #在预先实现的特征提取函数中，使用像素强度时，
     #为了保证特征 向量尺寸一致，我们统一将rect中的图像区域resize到与ref_wh一致的尺寸
     sigmas = [4, 4, 0.03, 0.03]  # Transition sigma of each attr of a particle粒子cx,cy,sx,sy的状态转移标准差
     n_particles = 400            # Number of particles used in particle filter使用的粒子总数，值越高算法速度越慢，但是跟踪性能会越好
     feature_type = 'intensity'   # Default feature type, you can try some better features(e.g: HOG)使用的特征类型
-    step = 1  # Gap of 读取图像序列的间隔，step=1时，会连续读取图像帧，step=2时，会隔一帧读取图 像。该值越高，跟踪的难度越大
+    step = 1  # Gap of 读取图像序列的间隔，step=1时，会连续读取图像帧，step=2时，会隔一帧读取图像。该值越高，跟踪的难度越大
     
     # Read image sequences
     img_list = dataset_dir.files()
@@ -83,7 +83,7 @@ def main():
     particles = [init_particle.clone() for i in range(n_particles) ]  # Initialize particles
     #你也可以使用一组4 x N（或N x 4）的 numpy.array来直接表示一组粒子，以便于批量的操作计算
 
-    # Initial matching template
+    # Initial matching template 根据 init_rect 提取一个模板出来
     init_features = extract_feature(init_img, init_rect, ref_wh, feature_type)
     template = init_features  # Use feature of latest frame as the matching template
 

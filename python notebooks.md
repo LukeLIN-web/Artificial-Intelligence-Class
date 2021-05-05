@@ -37,11 +37,31 @@ xy = (i, j)
 res.append(xy) correct
 ```
 
-list中find:  if a in list :就可以了.
+list中find查找:  if a in list :就可以了.
 
 遍历list
 
 list 中元素个数 : open_list.__len__()
+
+
+
+负索引表示从末尾开始，-1 表示最后一个项目，-2 表示倒数第二个项目
+
+```python
+thislist[2:5])
+print(len(thislist))
+删除:
+    thislist.remove("banana")
+    thislist.pop()
+    del thislist[0]
+    del thislist
+复制:
+    mylist = list(thislist)
+    mylist = thislist.copy()
+    追加
+    您可以使用 extend() 方法，其目的是将一个列表中的元素添加到另一列表中：
+    
+```
 
 ##### 错误
 
@@ -147,7 +167,21 @@ heapq.heappop(h)
 就会把10,0 排在第一个,弹出
 ```
 
+### 矩阵
 
+TypeError: list indices must be integers or slices, not tuple
+
+在取矩阵某一列时会出现报错,这是因为此时矩阵存储在列表(list)中，而列表中的每一个元素大小可能不同，因此不能直接取其某一列进行操作
+
+可以利用`numpy.array`函数将其转变为标准矩阵，再对其进行取某一列的操作：
+
+matrix = [[0, 1, 2], [3, 4, 5]] 
+
+matrix = numpy.array(matrix)
+
+ vector = matrix[:, 0] 
+
+print(vector)
 
 ### 切片
 
