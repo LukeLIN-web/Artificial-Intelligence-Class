@@ -61,7 +61,6 @@ class Particle(object):
         cy: row index of the center of rectangle (pixel)
         sx: width compared with a reference size
         sy: height compared with a reference size
-
         The following attrs are optional
         weight: weight of this particle
         sigmas: transition sigmas of this particle转移概率分布标准差（表示cx,cy,sx,sy对应的概率分布标准差）
@@ -144,8 +143,9 @@ def extract_feature(dst_img, rect, ref_wh, feature_type='intensity'):
     :param feature_type:
     :return: A vector of features value
     """
-    #
-    #本函数预先实现了一个基于像素强度(其实就是灰度)的特征提取，会根据rect对应图像区域计算一个1 x ref_wh[0] x ref_wh[1]的特征向量
+    
+    #本函数预先实现了一个基于像素强度(其实就是灰度)的特征提取，
+    # 会根据rect对应图像区域计算一个1 x ref_wh[0] x ref_wh[1]的特征向量
     #可以根据需要尝试其他更优秀的特征 直接用else if 写在下面就可以了 
     if feature_type == 'intensity':
         rect.clip_range(dst_img.shape[1], dst_img.shape[0]) # 先裁剪一下.保证在范围内
@@ -154,7 +154,7 @@ def extract_feature(dst_img, rect, ref_wh, feature_type='intensity'):
 
         scaled_roi = cv2.resize(roi, (ref_wh[0], ref_wh[1]))   # Fixed-size ROI
         #感兴趣区域(ROI) 是从图像中选择的一个图像区域 然后改变一下大小 
-        return scaled_roi.astype(np.float).reshape(1, -1)/255.0  #转换为float,reshape(1,-1)转化成1行灰度值：
+        return scaled_roi.astype(np.float).reshape(1, -1)/255.0  #转换为float,reshape(1,-1)转化成1行,灰度值：
     else:
         print('Undefined feature type \'{}\' !!!!!!!!!!')
         return None
@@ -187,13 +187,20 @@ def weighting_step(dst_img, particles, ref_wh, template, feature_type):
     :return: weights of particles
     """
     #计算每个粒子与当前跟踪的特征匹配模板template的相似度，
+    #使用场景 weighting_step(curr_img, particles, ref_wh, template, feature_type)
     # 从而计算每个粒子对应的权重
     # 这里你需要实现一个compute_similarity(particles, template)函数，
-    # 表明相似度的计算 过程.返回值weights是每个粒子对应的权重，且 sum(weights) = 1
-
-    pass
-
-
+    # 表明相似度的计算过程.返回值weights是每个粒子对应的权重，且 sum(weights) = 1  
+    if feature_type == 'intensity':
+        res = []
+        sum = 0.0 #根据占比来归一化
+        for curr_pr in particles:
+            curr_pr.weight = compute_similarity( extract_feature(curr_img, curr_pr.to_rect(ref_wh), ref_wh, feature_type),template)
+            sum += curr_pr.weight
+        for i in range(len(particles)):
+            res[i] = curr_pr.weight/sum # 这样加起来会不会不等于1 , 会等于0.999
+            curr_pr.weight = res[i]
+    return res
 
 def resample_step(particles, weights, rsp_sigmas=None):
     """
@@ -202,12 +209,14 @@ def resample_step(particles, weights, rsp_sigmas=None):
     :param weights: Particles' weights
     :param rsp_sigmas: For transition of resampled particles
     """
+    #rsp_particles = resample_step(particles, weights) —— 重采样函数 根据每个粒子的权重，对其重新采样
+    # 保留或增加高权重的粒子，减少或剔除低权重粒子.注意要保持粒子总数不变
     # 这里要自己判断怎么根据权重来resample
-    # 根据每个粒子的权重，对其重新采样，保留或增加高权重的粒子，减少或剔除低权重粒子,
+    # 根据每个粒子的权重，对其重新采样，保留或增加高权重的粒子，减少或剔除低权重粒子
     # 注意要保持粒子总数不变
     res = []
-    for i in range(particles.len()):
-        threshold = random.random() # 随机生成的一个实数，它在[0,1)范围内。
+    for i in range(len(particles)):
+        threshold = random.random() # 随机生成的一个实数，它在[0,1)范围内
         sum = 0
         for j in particles:
             sum += j.weight #权值很大 当权重求和加到q(i)这个粒子的时候 将很多次大于0-1随机数
@@ -223,8 +232,7 @@ def compute_similarities(features, template):
     :param features: features of particles
     :template: template for matching
     """
-    #rsp_particles = resample_step(particles, weights) —— 重采样函数 根据每个粒子的权重，对其重新采样，
-    # 保留或增加高权重的粒子，减少或剔除低权重粒子.注意要保持粒子总数不变
+    # 我也搞不懂他怎么拿到一群 features的.
     pass
      
 def compute_similarity(feature, template):
@@ -233,4 +241,7 @@ def compute_similarity(feature, template):
     :param feature: feature of a single particle 单个粒子.
     :template: template for matching
     """
-    pass
+    #下面两行欧氏距离实现
+    res = np.sqrt(sum(np.power((feature - template), 2)))  #nparray的话这么写
+    math.sqrt(sum([(a - b)**2 for (a,b) in zip(A,B)])) # list 的话这么写
+    return res

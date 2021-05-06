@@ -64,7 +64,7 @@ def main():
     #############################################
     ref_wh = [15, 15]            # Reference size of particle
     #在预先实现的特征提取函数中，使用像素强度时，
-    #为了保证特征 向量尺寸一致，我们统一将rect中的图像区域resize到与ref_wh一致的尺寸
+    #为了保证特征向量尺寸一致，我们统一将rect中的图像区域resize到与ref_wh一致的尺寸
     sigmas = [4, 4, 0.03, 0.03]  # Transition sigma of each attr of a particle粒子cx,cy,sx,sy的状态转移标准差
     n_particles = 400            # Number of particles used in particle filter使用的粒子总数，值越高算法速度越慢，但是跟踪性能会越好
     feature_type = 'intensity'   # Default feature type, you can try some better features(e.g: HOG)使用的特征类型
@@ -104,7 +104,7 @@ def main():
         # Decision of best bounding box location by weights
         # 根据每个粒子的权重和分布来确定当前目标的位置，以及生成下一帧的匹配模板。
         # 这里我们预设了一个最简单的策略：使用权重最大的粒子作为当前帧的跟踪结果，其对应的特征向量就是下一帧的匹配模板
-        max_idx = np.argmax(weights)
+        max_idx = np.argmax(weights)  
         curr_particle = particles[max_idx]
         template = extract_feature(curr_img, curr_particle.to_rect(ref_wh), ref_wh, feature_type)
         
