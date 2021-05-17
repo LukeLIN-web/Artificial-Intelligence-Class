@@ -185,6 +185,8 @@ matrix = numpy.array(matrix)
 
 print(vector)
 
+运行时处理的时候把self.cx赋成list或者array 非常容易出错!!!
+
 ### 切片
 
 https://www.liaoxuefeng.com/wiki/1016959663602400/1017269965565856
