@@ -10,7 +10,7 @@
 
 basic type : int/float/ complex , str . bool
 
-container :  list/tuple,  dict/ set 
+container :  list/tuple,  dict/ set  
 
 dict是用来存储键值对结构的数据的，set其实也是存储的键值对，只是默认键和值是相同的。Python中的dict和set都是通过散列表来实现的
 
@@ -18,15 +18,19 @@ tuple ,int , str是immutable的,值传递  list,dict是 mutable的, 引用传递
 
 list 的方法有: insert, remove, slice, index, interate,  
 
-range(10)  产生一个0到9的 range object.
 
-`list(range(10))`
+
+range(10)  产生一个0到9的 range object.`list(range(10))`
 
 终止index是 左闭右开的. 比如`list(range(1,11))`  从1到10 
 
 TypeError: 'int' object is not subscriptable此报错一般是在整数上加了下标：
 
 #### list
+
+list没泛型，leetcode的List有
+
+
 
 list中加入tuple
 
@@ -37,20 +41,19 @@ xy = (i, j)
 res.append(xy) correct
 遍历list
 for i in list
-```
-
+初始化list
+li = [i for i in range(8)]
 list中find查找:  if a in list :就可以了.
-
-
-
-list 中元素个数 : open_list.__len__()
-
-
+        找有几个dog:flashcard_list.count('dog')
+```
 
 负索引表示从末尾开始，-1 表示最后一个项目，-2 表示倒数第二个项目
 
 ```python
+list 中元素个数 :  len(prices)
 thislist[2:5])
+获得最后一个
+print(list1[-1])
 print(len(thislist))
 删除:
     thislist.remove("banana")
@@ -62,7 +65,7 @@ print(len(thislist))
     mylist = thislist.copy()
     追加
     您可以使用 extend() 方法，其目的是将一个列表中的元素添加到另一列表中：
-    
+   
 ```
 
 ##### 错误
@@ -75,21 +78,38 @@ print(len(thislist))
 
 #### dict
 
-大括号来产生一个dict
-
-例如`band = {'drum': 'saya' , 'voacal' : 'kani'}`
-
 所有mutable object是不能做key的.
+
+```python
+大括号来产生一个dict
+例如`band = {'drum': 'saya' , 'voacal' : 'kani'}`
+get 也可以用[],但是如果用字典里没有的键访问数据，会输出错误
+dict['Age'] = 8 # 更新
+dict['School'] = "RUNOOB" # 添加
+判断python字典中key是否存在
+ d.has_key('name')
+'name' in d.keys() 除了使用in还可以使用not in，判定这个key不存在
+```
 
 
 
 #### tuple
 
-不可变的序列, 
+不可变的序列
 
 
 
+### deque
 
+```python3
+from collections import deque
+d = deque(['a','b','c','d','e','f'])
+d.extendleft
+如果使用deque进行切片的话会抛出异常,比如print(d[:-1])不行
+print(dq.count(1))
+计算队列元素的个数是否等于1个，假设大于或等于都返回True。否则返回False
+count不能用来求deque元素个数, 要用len
+```
 
 ### 运算符
 
@@ -112,10 +132,6 @@ for-in  for语句不需要int i 变量,
 `for it in s`   类似于 cpp中的 `for(auto it : s)`
 
  可以同时返回多个值.
-
-
-
-
 
 ### 类
 
@@ -150,8 +166,6 @@ print``(cat_1.__eq__(cat_2))
 
 通过比较它的b属性建立堆排序::
 
-
-
 ```python
 1.   def __lt__(self, other):
 2.         if self.b<other.b:
@@ -168,6 +182,22 @@ heapq.heappush(h,c)
 heapq.heappop(h)
 就会把10,0 排在第一个,弹出
 ```
+
+#### 类内方法
+
+因为类里面调用属性需要先加实例化，那是不是写**Chinese().name**是的，这样写没有错，但是我们没必要这样写呢，我们上面说过self就是类的实例化，所以我们写成**self.name** 就可以调用属性了，类的属性调用前面加**self.属性名**就可以了。self在类中就是Chinese()，我们完全可以把全部的self写成Chinese()，传参时也不会传给他。
+
+综上，所以我们说self代表的是类的实例本身，方便数据的流转。对此，我们需要记住两点：
+
+第一点：只要在类中用def创建方法时，就必须把第一个参数位置留给 self，并在调用方法时忽略它（不用给self传参）。
+
+第二点**：当在类的方法内部想调用类属性或其他方法时，就要采用self.属性名或self.方法名的格式。**
+
+接下来我们说说类中的初始化
+
+定义初始化方法的格式是def init(self)，是由init加左右两边的【双】下划线组成（ initialize “初始化”的缩写）。
+
+初始化方法的作用在于：实例对象创建时，该方法内的代码无须调用就会自动运行。
 
 ### 矩阵
 
@@ -203,17 +233,13 @@ https://www.liaoxuefeng.com/wiki/1016959663602400/1017269965565856
 [0, 2, 4, 6, 8]
 所有数，每5个取一个：
 >>> L[::5]
+L[::-1]反转
 childs.append(curr_state[:idx - 1] + curr_state[idx:idx + 1] + curr_state[idx - 1:idx] + curr_state[idx + 1:]) 
 两行交换, 越界了也不会报错.
 交换二维list中两个元素,和np中array不一样.
       curr_state.state[:row] + [
             curr_state.state[row][:col] + curr_state.state[row + 1][col:col + 1] + curr_state.state[row][col + 1:]] + [curr_state.state[row + 1][:col] + curr_state.state[row][col:col + 1] + curr_state.state[row + 1][ col + 1:]] + curr_state.state[row + 2:]
-  
 ```
-
-
-
-
 
 ### 垃圾回收
 
@@ -241,8 +267,6 @@ PyObject是每个对象必有的内容，其中ob_refcnt就是做为引用计数
 - 新创建的对象都会分配在**年轻代**，年轻代链表的总数达到上限时，Python垃圾收集机制就会被触发，把那些可以被回收的对象回收掉，而那些不会回收的对象就会被移到**中年代**去，依此类推，**老年代**中的对象是存活时间最久的对象，甚至是存活于整个系统的生命周期内。
 - 同时，分代回收是建立在标记清除技术基础之上。分代回收同样作为Python的辅助垃圾收集技术处理那些容器对象
 
-
-
 交换
 
 Python中没有swap()函数,交换两个数的方式
@@ -251,17 +275,11 @@ Python中没有swap()函数,交换两个数的方式
 a,b = b,a
 ```
 
-
-
 pycharm 一键注释: ctrl +/
-
-
 
 pycharm无法最大化, pycharm最小化打不开。
 
 解决方法: 重装pycharm也不行, 换个项目就可以了.
-
-
 
 #### numpy库
 
@@ -273,9 +291,30 @@ np.zeros(shape=(4, 4))
 
  ValueError: operands could not be broadcast together with shapes (0,) (3,)
 
+#### 字符串
+
+```python
 
 
-## 报错
+# 把字符串分割，
+>>>['https:', '', 'www.baidu.com', 'pdf', 'abcdefg.pdf']* print(str.split('/'))
+# 输出第一段字符串,>>>https:
+print(str.split('/')[0])
+#合并字符
+" ".join(["A","B","C","D"])
+'A B C D'
+# 翻转字符串三种方法:
+str='Runoob'
+print(str[::-1])
+str='Runoob'
+print(''.join(reversed(str)))
+str='Runoob'
+print(reduce(lambda x, y: y + x, str)) #
+```
+
+
+
+#### 报错
 
 【python报错】Non-ASCII character '\xe5' 
 
@@ -284,7 +323,7 @@ np.zeros(shape=(4, 4))
 
 coding=UTF-8 或者 -*- coding:UTF-8 -*-
 
-##### [python报错]"IndentationError: unexpected indent"的两三解决方法
+[python报错]"IndentationError: unexpected indent"的两三解决方法
 
 这个是缩进错误，我们可以通过下面几步解决他：
 首先检查代码是不是有错误的索引
@@ -294,19 +333,23 @@ vim可以用: set list 显示空格和制表符.
 unexpected indent 就是说“n”是一个“意外的”缩进。也就是说，这里的问题就是指“n”是一个意外的缩进。通过查看源代码可知这里的确是缩进了一个字符位。
 据此推断，我们把这句话的缩进取消，也就是顶格写，
 
-##### [python报错]出现了AttributeError: object 'L2Cache' has no attribute 'connectCPUSideBus'
+[python报错]出现了AttributeError: object 'L2Cache' has no attribute 'connectCPUSideBus'
 
   (C++ object is not yet constructed, so wrapped C++ methods are unavail
 对象“l2cache”没有属性 ,很多是说不要用跟系统库同样名字,这里则是因为之前的顶格写,导致没有定义到class中去.
 
-##### 【python报错】TypeError: super(type, obj): obj must be an instance or subtype of type
+【python报错】TypeError: super(type, obj): obj must be an instance or subtype of type
 
 class FooChild(FooParent):
     def __init__(self):
          super(FooChild,self)
  #首先找到 FooChild 的父类（就是类 FooParent），然后把类 FooChild 的对象转换为类 FooParent 的对象
 
-##### Sccons
+TypeError: 'type' object is not subscriptable
+
+该对象是不可进行下标操作的.NameError: name 'List' is not defined
+
+#### Sccons
 
 Scons是一个开放源码、以Python语言编码的自动化构建工具，可用来替代make编写复杂的makefile。并且scons是跨平台的，只要scons脚本写的好，可以在Linux和Windows下随意编译。
 在Java的集成开发环境中，比如Eclipse、IDEA中，有常常有三种与编译相关的选项Compile、Make、Build三个选项。这三个选项最基本的功能都是完成编译过程。但又有很大的区别，区别如下：
@@ -315,3 +358,4 @@ Scons是一个开放源码、以Python语言编码的自动化构建工具，可
 2、Make：编译选定的目标，但是Make只编译上次编译变化过的文件，减少重复劳动，节省时间。（具体怎么检查未变化，这个就不用考虑了，IDE自己内部会搞定这些的）
 
 3、Build：是对整个工程进行彻底的重新编译，而不管是否已经编译过。Build过程往往会生成发布包，这个具体要看对IDE的配置了，Build在实际中应用很少，因为开发时候基本上不用，发布生产时候一般都用ANT等工具来发布。Build因为要全部编译，还要执行打包等额外工作，因此时间较长。
+
