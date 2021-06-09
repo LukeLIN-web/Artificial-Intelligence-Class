@@ -89,9 +89,20 @@ dict['School'] = "RUNOOB" # 添加
 判断python字典中key是否存在
  d.has_key('name')
 'name' in d.keys() 除了使用in还可以使用not in，判定这个key不存在
+遍历 dict 
+for key in dict: 或者for key in dict.keys():
+for value in dict.values():
+for key,value in dict.items():
+删除元素
+pop(key[,default])key: 要删除的键值default: 如果没有 key，返回 default 值
+del dict['Name']  # 删除键是'Name'的条目
+RuntimeError: dictionary changed size during iteration
+    先复制再 b = a[:] 再把a指向b。 或者list可以倒序循环遍历
+ 找最大值
+max(m.values())
+统计list成dict
+ freq = collections.Counter(tasks)
 ```
-
-
 
 #### tuple
 
@@ -99,7 +110,23 @@ dict['School'] = "RUNOOB" # 添加
 
 
 
-### deque
+#### set
+
+```python
+可以使用大括号 { } 或者 set() 函数创建集合，注意：创建一个空集合必须用 set() 而不是 { }，因为 { } 是用来创建一个空字典。
+>>> thisset = set(("Google", "Runoob", "Taobao"))
+>>> thisset.update({1,3})
+{1, 3, 'Google', 'Taobao', 'Runoob'}
+>>> thisset.update([1,4],[5,6])  
+{1, 3, 4, 5, 6, 'Google', 'Taobao', 'Runoob'}
+或者可以thisset.add("Facebook")
+s.remove( x )如果元素不存在，则会发生错误
+
+```
+
+
+
+#### deque
 
 ```python3
 from collections import deque
@@ -110,6 +137,23 @@ print(dq.count(1))
 计算队列元素的个数是否等于1个，假设大于或等于都返回True。否则返回False
 count不能用来求deque元素个数, 要用len
 ```
+
+#### array
+
+```python
+array.index(x)  
+# 方法返回x 在数组中第一次出现的下标, 下标从零开始,如果没有找到该元素会报异常.
+ValueError: array.index(x): x not in list
+其实这个没啥用,  因为只能一维, 一般都用二维的 np.array
+```
+
+循环
+
+但是在for循环内修改i值，只会对当前一次的循环体内有效
+
+跳跃的话, 要使用 while 替换 for
+
+
 
 ### 运算符
 
@@ -285,17 +329,23 @@ pycharm无法最大化, pycharm最小化打不开。
 
 ```python
 np.zeros(shape=(4, 4)) 
+x.shape
+x = np.array([[1, 2, 3], [4, 5, 6]], np.int32)
+y = x[:,1]  就是array([2, 5])
+y[0] = 9 # this also changes the corresponding element in x
+y
+array([9, 5])
+x
+array([[1, 9, 3],
+       [4, 5, 6]])
+x.sum(axis=0)
 ```
-
-
 
  ValueError: operands could not be broadcast together with shapes (0,) (3,)
 
 #### 字符串
 
 ```python
-
-
 # 把字符串分割，
 >>>['https:', '', 'www.baidu.com', 'pdf', 'abcdefg.pdf']* print(str.split('/'))
 # 输出第一段字符串,>>>https:
@@ -309,10 +359,9 @@ print(str[::-1])
 str='Runoob'
 print(''.join(reversed(str)))
 str='Runoob'
+from functools import reduce
 print(reduce(lambda x, y: y + x, str)) #
 ```
-
-
 
 #### 报错
 
@@ -358,4 +407,3 @@ Scons是一个开放源码、以Python语言编码的自动化构建工具，可
 2、Make：编译选定的目标，但是Make只编译上次编译变化过的文件，减少重复劳动，节省时间。（具体怎么检查未变化，这个就不用考虑了，IDE自己内部会搞定这些的）
 
 3、Build：是对整个工程进行彻底的重新编译，而不管是否已经编译过。Build过程往往会生成发布包，这个具体要看对IDE的配置了，Build在实际中应用很少，因为开发时候基本上不用，发布生产时候一般都用ANT等工具来发布。Build因为要全部编译，还要执行打包等额外工作，因此时间较长。
-
