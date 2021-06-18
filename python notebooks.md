@@ -39,6 +39,7 @@ res += (i, j)是不对的, 就是加了两个int
 res.append((i, j)) correct
 xy = (i, j)
 res.append(xy) correct
+
 遍历list
 for i in list
 初始化list
@@ -56,8 +57,8 @@ thislist[2:5])
 print(list1[-1])
 print(len(thislist))
 删除:
-    thislist.remove("banana")
-    thislist.pop()
+    thislist.remove("banana")remove方法只会删除掉该元素在列表中第一次出现的位置
+    thislist.pop()有insert方法可以直接在对应下标处插入元素，pop方法也可以带参数使用，从而删除指定下标处的元素
     del thislist[0]
     del thislist
 复制:
@@ -65,7 +66,9 @@ print(len(thislist))
     mylist = thislist.copy()
     追加
     您可以使用 extend() 方法，其目的是将一个列表中的元素添加到另一列表中：
-   
+表示栈
+st.append(str)
+res += st.pop()
 ```
 
 ##### 错误
@@ -124,7 +127,35 @@ s.remove( x )如果元素不存在，则会发生错误
 
 ```
 
+#### 优先队列
 
+`heapq`是二叉堆，通常用普通列表实现`heapq`模块是在Python中不错的优先级队列实现。由于heapq在技术上只提供最小堆实现，因此必须添加额外步骤来确保排序稳定性，以此来获得“实际”的优先级队列中所含有的预期特性。
+
+```python
+import heapq
+q = []
+heapq.heappush(q, (2, 'code'))
+heapq.heappush(q, (1, 'eat'))
+heapq.heappush(q, (3, 'sleep'))
+while q:
+    next_item = heapq.heappop(q)
+    print(next_item)
+# 结果：
+#   (1, 'eat')
+#   (2, 'code')
+#   (3, 'sleep')
+q = PriorityQueue()
+>>> q.put((2, "Lisa"))
+>>> q.put((1, "Lucy"))
+>>> q.put((0, "Tom"))
+The lowest valued entries are retrieved first 
+与 heapq 模块不同的是，PriorityQueue 是基于类实现的，其提供的操作是同步的，提供锁操作，支持并发的生产者和消费者。
+Queue objects (Queue, LifoQueue, or PriorityQueue) provide the public methods described below.
+Queue.get(block=True, timeout=None)
+Remove and return an item from the queue. 
+Queue.put(item, block=True, timeout=None)
+Put item into the queue.
+```
 
 #### deque
 
@@ -152,6 +183,15 @@ ValueError: array.index(x): x not in list
 但是在for循环内修改i值，只会对当前一次的循环体内有效
 
 跳跃的话, 要使用 while 替换 for
+
+#### sort
+
+```python
+# 降序
+vowels.sort(reverse=True)
+a = [('b', 4), ('a', 12), ('d', 7), ('h', 6), ('j', 3)]
+a.sort(key=lambda x: x[0])
+```
 
 
 
@@ -343,7 +383,7 @@ x.sum(axis=0)
 
  ValueError: operands could not be broadcast together with shapes (0,) (3,)
 
-#### 字符串
+### 字符串
 
 ```python
 # 把字符串分割，
@@ -361,6 +401,20 @@ print(''.join(reversed(str)))
 str='Runoob'
 from functools import reduce
 print(reduce(lambda x, y: y + x, str)) #
+strip() It returns a new string after removing any leading and trailing whitespaces including tabs (\t).
+rstrip():  去除右边空格
+排序:
+s="abxc"
+l1=list(s)     #['a', 'b', 'x', 'c']
+l1.sort()      #['a', 'b', 'c', 'x']
+s1="".join(l1) #'abcx'
+str = '128-312-156'
+char_ = '-' # 从头开始找第一个匹配的字符位置
+nPos = str.find(char_ )
+print(nPos)# 输出 3
+# 从尾开始找第一个匹配的字符位置
+nPos = str.rfind(char_ )
+
 ```
 
 #### 报错
