@@ -107,6 +107,22 @@ max(m.values())
  freq = collections.Counter(tasks)
 ```
 
+defaultdict类除了接受类型名称作为初始化函数的参数之外，还可以使用任何不带参数的可调用函数，到时该函数的返回结果作为默认值，这样使得默认值的取值更加灵活。下面用一个例子来说明，如何用自定义的不带参数的函数zero()作为defaultdict类的初始化函数的参数：
+
+```python
+from collections import defaultdict
+>>> def zero():
+...     return 0
+>>> dd = defaultdict(zero)
+>>> dd
+defaultdict(<function zero at 0xb7ed2684>, {})
+>>> dd['foo']
+0
+>>> dd
+defaultdict(<function zero at 0xb7ed2684>, {'foo': 0})
+    
+```
+
 #### tuple
 
 不可变的序列
@@ -144,6 +160,7 @@ while q:
 #   (1, 'eat')
 #   (2, 'code')
 #   (3, 'sleep')
+from queue import PriorityQueue as PQ
 q = PriorityQueue()
 >>> q.put((2, "Lisa"))
 >>> q.put((1, "Lucy"))
@@ -191,9 +208,24 @@ ValueError: array.index(x): x not in list
 vowels.sort(reverse=True)
 a = [('b', 4), ('a', 12), ('d', 7), ('h', 6), ('j', 3)]
 a.sort(key=lambda x: x[0])
+list.sort(key=lambda x: (key1, key2))
 ```
 
 
+
+### typing 数据类型
+
+collections是Python内建的一个集合模块，提供了许多有用的集合类。
+
+### typing模块的作用
+
+1. 类型检查，防止运行时出现参数和返回值类型不符合。
+2. 作为开发文档附加说明，方便使用者调用时传入和返回参数类型。
+3. 该模块加入后并不会影响程序的运行，不会报正式的错误，只有提醒。
+
+- 在传入参数时通过"参数名:类型"的形式声明参数的类型；
+- 返回结果通过"-> 结果类型"的形式声明结果的类型。
+- 
 
 ### 运算符
 
@@ -270,6 +302,22 @@ heapq.heappop(h)
 #### 类内方法
 
 因为类里面调用属性需要先加实例化，那是不是写**Chinese().name**是的，这样写没有错，但是我们没必要这样写呢，我们上面说过self就是类的实例化，所以我们写成**self.name** 就可以调用属性了，类的属性调用前面加**self.属性名**就可以了。self在类中就是Chinese()，我们完全可以把全部的self写成Chinese()，传参时也不会传给他。
+
+\#写了self就隔离开,不写就可以通用? 为啥n可以传入sum不行? 因为n是比较, sum不能在类内改变.
+
+
+
+```
+    def waysToBuildRooms(self, prevRoom: List[int]) -> int:
+        n =  len(prevRoom) #写了self就隔离开,不写就可以通用
+        sum = 0 
+        def dfs(num:int) -> None:
+            if num == n:
+                sum +=1
+                return 
+```
+
+
 
 综上，所以我们说self代表的是类的实例本身，方便数据的流转。对此，我们需要记住两点：
 
@@ -382,6 +430,26 @@ x.sum(axis=0)
 ```
 
  ValueError: operands could not be broadcast together with shapes (0,) (3,)
+
+### 画图
+
+```python
+```
+
+### 读取文件夹
+
+```python
+import string
+import os
+for root, dirs, files in os.walk("./data/"):  # os.walk会该目录下的所有文件
+    print(files)
+    for file in files:
+        name = file.split("_")
+        score = float(name[0])
+        print(score)
+```
+
+
 
 ### 字符串
 
