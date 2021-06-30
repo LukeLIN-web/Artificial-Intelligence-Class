@@ -30,3 +30,18 @@ project_2/
 ```
 
 then upload your project in a compressed package with your name and student ID. E.g. `12345678_张三.zip` . Ensure that your solution codes can run as the descriptions in `Introduction.pdf`.
+
+采样的方式, 对连续的过程滤波处理, 
+
+一开始手动初始化target region
+
+提取特征, 可以改成sift,hog
+
+weighting step  可以用 余弦相似度, 欧氏距离,minkowski距离, 
+
+PCA主成分分析, 
+
+
+
+#### resample
+

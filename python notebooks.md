@@ -105,21 +105,23 @@ RuntimeError: dictionary changed size during iteration
 max(m.values())
 统计list成dict
  freq = collections.Counter(tasks)
+    freq = Counter([0])
 ```
 
-defaultdict类除了接受类型名称作为初始化函数的参数之外，还可以使用任何不带参数的可调用函数，到时该函数的返回结果作为默认值，这样使得默认值的取值更加灵活。下面用一个例子来说明，如何用自定义的不带参数的函数zero()作为defaultdict类的初始化函数的参数：
+##### defaultdict类
+
+除了接受类型名称作为初始化函数的参数之外，还可以使用任何不带参数的可调用函数，到时该函数的返回结果作为默认值，这样使得默认值的取值更加灵活。
 
 ```python
 from collections import defaultdict
 >>> def zero():
 ...     return 0
 >>> dd = defaultdict(zero)
->>> dd
-defaultdict(<function zero at 0xb7ed2684>, {})
 >>> dd['foo']
 0
->>> dd
-defaultdict(<function zero at 0xb7ed2684>, {'foo': 0})
+接受类型名称作为初始化函数的参数
+  freq = defaultdict(int)
+  freq[0] =1
     
 ```
 
@@ -483,6 +485,9 @@ print(nPos)# 输出 3
 # 从尾开始找第一个匹配的字符位置
 nPos = str.rfind(char_ )
 
+转ascii码
+int()方法将字符转换成ASCII码
+可以使用ord()函数和chr()函数进行ASCII码转换。
 ```
 
 #### 报错
